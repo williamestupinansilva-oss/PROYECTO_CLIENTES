@@ -17,14 +17,17 @@ async def listar_facturas (sesion:Sesion_dependencia):
     return lista_facturas
 
 
-@ruta_facturas.get ("/facturas/{cliente_id}", response_model= Factura)
-async def listar_facturas (factura_id: int):
-    for i, obj_factura in enumerate (lista_facturas):
-        if obj_factura.id == factura_id:
-            return obj_factura
-    raise HTTPException(
-        status_code=status.HTTP_400_BAD_REQUEST, detail=f"La factura con id {factura_id}, no existe."
-    )
+@ruta_facturas.get("/facturas/{factura_id}", response_model=Factura)
+async def listar_factura(factura_id: int, mi_sesion: Sesion_dependencia):
+    factura_bd = mi_sesion.get(Factura, factura_id)
+
+    if not factura_bd:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"La factura con id {factura_id}, no existe."
+        )
+
+    return factura_bd
 
 
 @ruta_facturas.post ("/facturas/{cliente_id}", response_model= Factura)
